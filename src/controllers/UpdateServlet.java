@@ -1,4 +1,4 @@
-package controlles;
+package controllers;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -17,16 +17,16 @@ import models.validators.TaskValidator;
 import utils.DBUtil;
 
 /**
- * Servlet implementation class CreateServlet
+ * Servlet implementation class UpdateServlet
  */
-@WebServlet("/create")
-public class CreateServlet extends HttpServlet {
+@WebServlet("/update")
+public class UpdateServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public CreateServlet() {
+    public UpdateServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -39,33 +39,32 @@ public class CreateServlet extends HttpServlet {
         String _token = request.getParameter("_token");
         if(_token != null && _token.equals(request.getSession().getId())) {
             EntityManager em = DBUtil.createEntityManager();
-            em.getTransaction().begin();
 
-            Task t = new Task();
+            Task t = em.find(Task.class, (Integer)request.getSession().getAttribute("task_id"));
 
             String content = request.getParameter("content");
             t.setContent(content);
 
             Timestamp currentTime = new Timestamp(System.currentTimeMillis());
-            t.setCreated_at(currentTime);
             t.setUpdated_at(currentTime);
 
             List<String> errors = TaskValidator.validate(t);
             if(errors.size() > 0) {
                 em.close();
 
-                request.setAttribute("_token",request.getSession().getId());
+                request.setAttribute("_token", request.getSession().getId());
                 request.setAttribute("task", t);
                 request.setAttribute("errors", errors);
 
-                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/tasks/new.jsp");
+                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/views/tasks/edit.jsp");
                 rd.forward(request, response);
             }else {
-                em.persist(t);
+                em.getTransaction().begin();
                 em.getTransaction().commit();
-                request.getSession().setAttribute("flush", "登録が完了しました。");
+                request.getSession().setAttribute("flush", "更新が完了しました。");
                 em.close();
 
+                request.getSession().removeAttribute("task_id");
                 response.sendRedirect(request.getContextPath() + "/index");
             }
         }

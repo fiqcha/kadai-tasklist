@@ -1,4 +1,4 @@
-package controlles;
+package controllers;
 
 import java.io.IOException;
 
@@ -16,13 +16,13 @@ import utils.DBUtil;
  * Servlet implementation class DestoryServlet
  */
 @WebServlet("/destroy")
-public class DestoryServlet extends HttpServlet {
+public class DestroyServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public DestoryServlet() {
+    public DestroyServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
